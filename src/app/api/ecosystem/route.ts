@@ -12,6 +12,13 @@ import {
 
 // GET endpoint - Fetch ecosystem-filtered data
 export async function GET(request: Request) {
+  // Check for required environment variables at runtime
+  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+    return NextResponse.json({ 
+      error: 'Supabase configuration missing. Please set environment variables.' 
+    }, { status: 500 });
+  }
+  
   console.log('🔵 ECOSYSTEM API CALLED');
   const { searchParams } = new URL(request.url);
   const ecosystem = searchParams.get('ecosystem');
@@ -155,12 +162,17 @@ export async function GET(request: Request) {
       // Sort builders by ecosystem points
       const sortedBuilders = data.builders.sort((a, b) => b.ecosystemPoints - a.ecosystemPoints);
       
+      // Count builders with global rank <= 100
+      const top100Count = data.builders.filter(b => 
+        b.rank && b.rank <= 100
+      ).length;
+      
       countries.push({
         country: countryName,
         countryCode,
         builderCount,
         rankScore: logWeightedScore,
-        rankedBuilders: builderCount,
+        rankedBuilders: top100Count,
         topBuilders: sortedBuilders.slice(0, 5).map(b => ({
           name: b.name || 'Anonymous',
           rank: b.rank || null,

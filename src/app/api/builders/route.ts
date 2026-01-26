@@ -4,6 +4,13 @@ import { CountryStats, GlobeData, BuilderDetail } from '@/types';
 
 // GET endpoint - Fetch all country stats or specific country builders
 export async function GET(request: Request) {
+  // Check for required environment variables at runtime
+  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+    return NextResponse.json({ 
+      error: 'Supabase configuration missing. Please set environment variables.' 
+    }, { status: 500 });
+  }
+  
   const { searchParams } = new URL(request.url);
   const countryCode = searchParams.get('country');
   const ecosystem = searchParams.get('ecosystem'); // New parameter

@@ -322,15 +322,20 @@ async function syncData() {
       const { country, totalCount, profiles, avgScore } = result;
 
       try {
-        // Upsert country stats
-        const { error: statsError } = await supabase
-          .from('country_stats')
-          .upsert({
-            country_code: country.code,
-            country: country.name,
-            builder_count: totalCount,
-            rank_score: avgScore,
-            ranked_builders: profiles.length,
+          // Count builders in global top 100 (rank_position <= 100)
+          const top100Count = profiles.filter(p => 
+            p.builder_score?.rank_position && p.builder_score.rank_position <= 100
+          ).length;
+          
+          // Upsert country stats
+          const { error: statsError } = await supabase
+            .from('country_stats')
+            .upsert({
+              country_code: country.code,
+              country: country.name,
+              builder_count: totalCount,
+              rank_score: avgScore,
+              ranked_builders: top100Count,
             top_builders: profiles.slice(0, 5).map(p => ({
               name: p.display_name || p.name || 'Anonymous',
               rank: p.builder_score?.rank_position || null,
