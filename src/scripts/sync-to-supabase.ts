@@ -358,7 +358,7 @@ async function syncData() {
           
           // Fetch data points for each builder (in smaller batches to avoid rate limits)
           const dataPointsBatch = 10;
-          const buildersWithDataPoints = [];
+          const buildersWithDataPoints: Array<{ profile: BuilderProfile; dataPoints: Record<string, any> }> = [];
           
           for (let j = 0; j < profiles.length; j += dataPointsBatch) {
             const batchProfiles = profiles.slice(j, j + dataPointsBatch);

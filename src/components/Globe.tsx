@@ -25,10 +25,7 @@ export default function Globe({
   onCountryDoubleClick,
   colorMode 
 }: GlobeProps) {
-  const globeEl = useRef<{ 
-    controls: () => { autoRotate: boolean; autoRotateSpeed: number };
-    pointOfView: (pov: { lat: number; lng: number; altitude: number }) => void;
-  } | null>(null);
+  const globeEl = useRef<any>(null);
   const [globeReady, setGlobeReady] = useState(false);
   const [hoveredCountry, setHoveredCountry] = useState<string | null>(null);
   const lastClickRef = useRef<{ time: number; country: string | null }>({ time: 0, country: null });
@@ -52,7 +49,7 @@ export default function Globe({
         label: country.country,
         altitude: 0.01 + (intensity * 0.15)
       };
-    }).filter(Boolean);
+    }).filter((point): point is NonNullable<typeof point> => point !== null);
   }, [countries, maxBuilderCount, maxRankScore, colorMode]);
 
   // Memoize arcs data
@@ -72,7 +69,7 @@ export default function Globe({
           color: ['rgba(99, 102, 241, 0.6)', 'rgba(34, 211, 238, 0.6)']
         };
       })
-    ).filter(Boolean);
+    ).filter((arc): arc is NonNullable<typeof arc> => arc !== null);
   }, [countries]);
 
   // Memoize rings data
@@ -89,7 +86,7 @@ export default function Globe({
         repeatPeriod: 2000,
         color: 'rgba(99, 102, 241, 0.5)'
       };
-    }).filter(Boolean);
+    }).filter((ring): ring is NonNullable<typeof ring> => ring !== null);
   }, [countries]);
 
   useEffect(() => {
@@ -142,10 +139,8 @@ export default function Globe({
   }, []);
 
   // Callback ref to capture the globe instance
-  const setGlobeRef = useCallback((node: unknown) => {
-    if (node) {
-      globeEl.current = node as typeof globeEl.current;
-    }
+  const setGlobeRef = useCallback((node: any) => {
+    globeEl.current = node;
   }, []);
 
   const handleGlobeReady = useCallback(() => {
@@ -161,7 +156,7 @@ export default function Globe({
       </div>
       
       <GlobeGL
-        ref={setGlobeRef}
+        ref={globeEl as any}
         globeImageUrl="https://unpkg.com/three-globe/example/img/earth-night.jpg"
         bumpImageUrl="https://unpkg.com/three-globe/example/img/earth-topology.png"
         backgroundImageUrl="https://unpkg.com/three-globe/example/img/night-sky.png"

@@ -147,7 +147,7 @@ export async function GET(request: Request) {
 
     // Build country stats
     const countries: CountryStats[] = [];
-    for (const [countryCode, data] of countryMap.entries()) {
+    for (const [countryCode, data] of Array.from(countryMap.entries())) {
       const countryName = countryNameMap.get(countryCode) || countryCode;
       const builderCount = data.builders.length;
       const avgPoints = Math.round(data.totalPoints / builderCount);
@@ -164,7 +164,7 @@ export async function GET(request: Request) {
       
       // Count builders with global rank <= 100
       const top100Count = data.builders.filter(b => 
-        b.rank && b.rank <= 100
+        (b as any).rank && (b as any).rank <= 100
       ).length;
       
       countries.push({
@@ -174,10 +174,10 @@ export async function GET(request: Request) {
         rankScore: logWeightedScore,
         rankedBuilders: top100Count,
         topBuilders: sortedBuilders.slice(0, 5).map(b => ({
-          name: b.name || 'Anonymous',
-          rank: b.rank || null,
+          name: (b as any).name || 'Anonymous',
+          rank: (b as any).rank || null,
           score: b.ecosystemPoints,
-          image_url: b.image_url || ''
+          image_url: (b as any).image_url || ''
         }))
       });
     }

@@ -425,7 +425,7 @@ export default function Home() {
       <CountryDetailModal 
         country={modalCountry} 
         onClose={() => setModalCountry(null)}
-        ecosystem={ecosystem}
+        ecosystem={ecosystem || undefined}
       />
     </main>
   );

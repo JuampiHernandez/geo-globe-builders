@@ -30,6 +30,8 @@ export default function CountryDetailModal({ country, onClose, ecosystem }: Coun
     const controller = new AbortController();
 
     async function fetchCountryDetails() {
+      if (!country) return; // Guard clause for TypeScript
+      
       try {
         const ecosystemParam = ecosystem && ecosystem !== 'all' ? `&ecosystem=${ecosystem}` : '';
         console.log(`Fetching top 1000 builders for ${country.country}${ecosystemParam ? ` (${ecosystem} ecosystem)` : ''}...`);
@@ -61,7 +63,7 @@ export default function CountryDetailModal({ country, onClose, ecosystem }: Coun
     return () => {
       controller.abort();
     };
-  }, [country]);
+  }, [country, ecosystem]);
 
   if (!country) return null;
 
