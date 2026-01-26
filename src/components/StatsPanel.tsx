@@ -87,7 +87,7 @@ export default function StatsPanel({ data, selectedCountry, onViewBuilders }: St
             </div>
             <div className="text-center">
               <p className="text-2xl font-bold text-amber-400">{selectedCountry.rankScore.toLocaleString()}</p>
-              <p className="text-xs text-white/50">Avg Score</p>
+              <p className="text-xs text-white/50">Avg Points</p>
             </div>
           </div>
 
@@ -113,6 +113,7 @@ export default function StatsPanel({ data, selectedCountry, onViewBuilders }: St
                     <div className="flex items-center gap-1 text-cyan-400">
                       <span className="text-xs">⭐</span>
                       <span className="text-sm font-bold">{builder.score}</span>
+                      <span className="text-xs text-white/40">pts</span>
                     </div>
                   </div>
                 ))}

@@ -39,11 +39,45 @@ export default function Home() {
   const [modalCountry, setModalCountry] = useState<CountryStats | null>(null);
   const [colorMode, setColorMode] = useState<'builders' | 'rank'>('builders');
   const [showPanel, setShowPanel] = useState<'left' | 'right' | 'both'>('both');
+  const [ecosystem, setEcosystem] = useState<string | null>(null); // null = all, 'base' = Base ecosystem
 
   useEffect(() => {
     async function fetchDataWithProgress() {
+      // Reset loading state
+      setLoadingState({
+        isLoading: true,
+        progress: 0,
+        currentCountries: [],
+        totalCountries: 50,
+        loadedCountries: []
+      });
+      setError(null);
+      
       try {
-        // Use streaming endpoint for progress updates
+        // If ecosystem is selected, use ecosystem endpoint (faster, no streaming)
+        if (ecosystem) {
+          console.log('Fetching ecosystem data for:', ecosystem);
+          const response = await fetch(`/api/ecosystem?ecosystem=${ecosystem}`);
+          
+          if (!response.ok) {
+            const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
+            console.error('Ecosystem API error:', errorData);
+            throw new Error(errorData.error || 'Failed to fetch ecosystem data');
+          }
+          
+          const ecosystemData: GlobeData = await response.json();
+          console.log('Ecosystem data received:', ecosystemData);
+          setData(ecosystemData);
+          setLoadingState(prev => ({
+            ...prev,
+            isLoading: false,
+            progress: 100,
+            loadedCountries: ecosystemData.countries
+          }));
+          return;
+        }
+        
+        // Use streaming endpoint for progress updates (all builders)
         const response = await fetch('/api/builders', {
           method: 'POST',
         });
@@ -131,7 +165,7 @@ export default function Home() {
     }
 
     fetchDataWithProgress();
-  }, []);
+  }, [ecosystem]);
 
   const handleCountryClick = useCallback((country: CountryStats | null) => {
     setSelectedCountry(country);
@@ -211,6 +245,21 @@ export default function Home() {
               <h1 className="text-xl font-bold text-white">Builder Globe</h1>
               <p className="text-xs text-white/50">Powered by Talent Protocol</p>
             </div>
+            <div className="w-px h-8 bg-white/10 mx-2" />
+            
+            {/* Ecosystem Filter */}
+            <select
+              value={ecosystem || ''}
+              onChange={(e) => {
+                setEcosystem(e.target.value || null);
+                setSelectedCountry(null); // Reset selection when changing ecosystem
+              }}
+              className="px-3 py-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-white text-sm transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            >
+              <option value="">All Builders</option>
+              <option value="base">🔵 Base Ecosystem</option>
+            </select>
+            
             <div className="w-px h-8 bg-white/10 mx-2" />
             <button
               onClick={() => setShowPanel(showPanel === 'both' ? 'right' : showPanel === 'right' ? 'left' : 'both')}
@@ -375,7 +424,8 @@ export default function Home() {
       {/* Country Detail Modal */}
       <CountryDetailModal 
         country={modalCountry} 
-        onClose={() => setModalCountry(null)} 
+        onClose={() => setModalCountry(null)}
+        ecosystem={ecosystem}
       />
     </main>
   );

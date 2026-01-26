@@ -75,6 +75,88 @@ export interface CountryDetailResponse {
   builders: BuilderDetail[];
 }
 
+export interface DataPoint {
+  account_source: string;
+  account_identifier: string;
+  created_at: string;
+  credential_slug: string;
+  project_slug: string | null;
+  readable_value: string;
+  recalculated_at: string;
+  updated_at: string;
+}
+
+export interface Ecosystem {
+  name: string;
+  slug: string;
+  credentialSlugs: string[];
+}
+
+export const ECOSYSTEMS: Ecosystem[] = [
+  {
+    name: 'Base',
+    slug: 'base',
+    credentialSlugs: [
+      'base_weekly_contract_fees',
+      'base_monthly_contract_fees',
+      'base_learn',
+      'base_total_contract_transactions',
+      'base_mainnet_contracts_deployed',
+      'total_base_builder_earnings',
+      'base_basecamp',
+      'base_mainnet_active_contracts',
+      'base_monthly_contract_transactions',
+      'base_weekly_contract_transactions',
+      'base_builds_earnings',
+      'base_devfolio_hackathons_participation',
+      'base_builder_rewards_eth',
+      'base_testnet_contracts_deployed',
+      'base_app_creator_rewards',
+      'base_account_age',
+      'base_mainnet_contracts_verified',
+      'base_total_contract_fees',
+      'base_devfolio_hackathons_won',
+      'base_out_transactions',
+      'base_basename'
+    ]
+  },
+  {
+    name: 'Celo',
+    slug: 'celo',
+    credentialSlugs: [] // To be filled
+  },
+  {
+    name: 'Arbitrum',
+    slug: 'arbitrum',
+    credentialSlugs: [] // To be filled
+  },
+  {
+    name: 'Ethereum',
+    slug: 'ethereum',
+    credentialSlugs: [] // To be filled
+  },
+  {
+    name: 'Optimism',
+    slug: 'optimism',
+    credentialSlugs: [] // To be filled
+  },
+  {
+    name: 'WalletConnect',
+    slug: 'walletconnect',
+    credentialSlugs: [] // To be filled
+  },
+  {
+    name: 'Stacks',
+    slug: 'stacks',
+    credentialSlugs: [] // To be filled
+  },
+  {
+    name: 'Farcaster',
+    slug: 'farcaster',
+    credentialSlugs: [] // To be filled
+  }
+];
+
 export const COUNTRIES = [
   { name: "Afghanistan", code: "AF" },
   { name: "Albania", code: "AL" },

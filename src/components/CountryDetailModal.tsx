@@ -7,9 +7,10 @@ import { CountryStats, CountryDetailResponse, BuilderDetail } from '@/types';
 interface CountryDetailModalProps {
   country: CountryStats | null;
   onClose: () => void;
+  ecosystem?: string; // Add ecosystem prop
 }
 
-export default function CountryDetailModal({ country, onClose }: CountryDetailModalProps) {
+export default function CountryDetailModal({ country, onClose, ecosystem }: CountryDetailModalProps) {
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState<CountryDetailResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -30,9 +31,10 @@ export default function CountryDetailModal({ country, onClose }: CountryDetailMo
 
     async function fetchCountryDetails() {
       try {
-        console.log(`Fetching top 100 builders for ${country.country}...`);
+        const ecosystemParam = ecosystem && ecosystem !== 'all' ? `&ecosystem=${ecosystem}` : '';
+        console.log(`Fetching top 1000 builders for ${country.country}${ecosystemParam ? ` (${ecosystem} ecosystem)` : ''}...`);
         
-        const response = await fetch(`/api/builders?country=${country.countryCode}`, {
+        const response = await fetch(`/api/builders?country=${country.countryCode}${ecosystemParam}`, {
           signal: controller.signal
         });
         
@@ -118,7 +120,7 @@ export default function CountryDetailModal({ country, onClose }: CountryDetailMo
                 <div className="flex items-center gap-2">
                   <div className="w-2 h-2 rounded-full bg-indigo-400" />
                   <span className="text-sm text-white/70">
-                    Showing top <span className="text-indigo-400 font-bold">{data.builders.length}</span> by score
+                    Showing top <span className="text-indigo-400 font-bold">{data.builders.length}</span> by points
                   </span>
                 </div>
               )}
@@ -133,7 +135,8 @@ export default function CountryDetailModal({ country, onClose }: CountryDetailMo
               <ErrorState error={error} onRetry={() => {
                 setError(null);
                 setLoading(true);
-                fetch(`/api/builders?country=${country.countryCode}`)
+                const ecosystemParam = ecosystem && ecosystem !== 'all' ? `&ecosystem=${ecosystem}` : '';
+                fetch(`/api/builders?country=${country.countryCode}${ecosystemParam}`)
                   .then(res => res.json())
                   .then(setData)
                   .catch(err => setError(err.message))
@@ -268,10 +271,11 @@ function BuilderCard({ builder, countryRank }: { builder: BuilderDetail; country
           )}
 
           <div className="flex items-center gap-3">
-            {/* Score */}
+            {/* Points */}
             <div className="flex items-center gap-1">
               <span className="text-amber-400 text-xs">⭐</span>
               <span className="text-sm font-bold text-amber-400">{builder.score}</span>
+              <span className="text-xs text-white/40">pts</span>
             </div>
 
             {/* Location */}
