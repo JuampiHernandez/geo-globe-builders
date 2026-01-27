@@ -2,14 +2,14 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const URL = process.env.NEXT_PUBLIC_URL || "https://your-domain.com";
+  const URL = process.env.NEXT_PUBLIC_URL || "https://geo-globe-builders.vercel.app";
   
   return {
-    title: "Builder Globe | Talent Protocol",
-    description: "Explore builders around the world with Talent Protocol",
-    icons: {
-      icon: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌍</text></svg>",
-    },
+  title: "Builder Globe | Talent Protocol",
+  description: "Explore builders around the world with Talent Protocol",
+  icons: {
+    icon: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌍</text></svg>",
+  },
     other: {
       'base:app_id': '6979020e88e3bac59cf3dbf5',
       'fc:miniapp': JSON.stringify({
@@ -27,7 +27,7 @@ export async function generateMetadata(): Promise<Metadata> {
         },
       }),
     },
-  };
+};
 }
 
 export default function RootLayout({
