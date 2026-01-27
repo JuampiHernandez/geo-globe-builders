@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import dynamic from 'next/dynamic';
+import { sdk } from '@farcaster/miniapp-sdk';
 import { GlobeData, CountryStats } from '@/types';
 import CountryCard from '@/components/CountryCard';
 import StatsPanel from '@/components/StatsPanel';
@@ -49,6 +50,11 @@ export default function Home() {
   const [ecosystem, setEcosystem] = useState<string | null>(null); // null = all, 'base' = Base ecosystem
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  // Initialize Farcaster Mini App SDK
+  useEffect(() => {
+    sdk.actions.ready();
+  }, []);
   const [showDesktopPanel, setShowDesktopPanel] = useState(true);
 
   useEffect(() => {
