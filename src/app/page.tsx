@@ -41,6 +41,8 @@ export default function Home() {
   const [showPanel, setShowPanel] = useState<'left' | 'right' | 'both'>('both');
   const [ecosystem, setEcosystem] = useState<string | null>(null); // null = all, 'base' = Base ecosystem
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [theme, setTheme] = useState<'dark' | 'light'>('dark');
+  const [showUI, setShowUI] = useState(true); // Toggle all floating UI elements
 
   useEffect(() => {
     async function fetchDataWithProgress() {
@@ -224,53 +226,114 @@ export default function Home() {
   }
 
   return (
-    <main className="min-h-screen bg-[#030712] relative overflow-hidden">
+    <main className={`min-h-screen ${theme === 'light' ? 'bg-gray-50' : 'bg-[#030712]'} relative overflow-hidden transition-colors duration-500`}>
       {/* Background effects */}
-      <div className="fixed inset-0 grid-pattern pointer-events-none" />
-      <div className="fixed inset-0 noise-overlay pointer-events-none" />
+      <div className={`fixed inset-0 grid-pattern pointer-events-none ${theme === 'dark' ? 'opacity-100' : 'opacity-30'}`} />
+      <div className={`fixed inset-0 noise-overlay pointer-events-none ${theme === 'dark' ? 'opacity-100' : 'opacity-20'}`} />
 
-      {/* Toggle Panel Button - Top Left */}
+      {/* Toggle UI Button - Top Left */}
       <motion.button
         initial={{ opacity: 0, x: -20 }}
         animate={{ opacity: 1, x: 0 }}
-        onClick={() => setShowPanel(showPanel === 'left' || showPanel === 'both' ? 'right' : 'both')}
-        className="fixed top-6 left-6 z-50 p-3 glass rounded-xl hover:bg-blue-600/20 transition-all duration-300 pointer-events-auto group"
-        title="Toggle left panel"
+        onClick={() => setShowUI(!showUI)}
+        className={`fixed top-6 left-6 z-50 p-3 ${
+          theme === 'light' ? 'bg-white/80 backdrop-blur-md border-gray-200' : 'glass'
+        } rounded-xl hover:bg-blue-600/20 transition-all duration-500 pointer-events-auto group`}
+        title={showUI ? "Hide UI" : "Show UI"}
       >
-        <svg className="w-6 h-6 text-white/70 group-hover:text-white transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+        <svg className={`w-6 h-6 ${theme === 'dark' ? 'text-white/70 group-hover:text-white' : 'text-gray-700 group-hover:text-gray-900'} transition-colors`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          {showUI ? (
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+          ) : (
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+          )}
         </svg>
       </motion.button>
 
+      {/* Made by Juampi - Top Right */}
+      <motion.div
+        initial={{ opacity: 0, x: 20 }}
+        animate={{ opacity: 1, x: 0 }}
+        className={`fixed top-6 right-6 z-50 px-4 py-2 ${
+          theme === 'light' ? 'bg-white/80 backdrop-blur-md border-gray-200' : 'glass'
+        } rounded-xl pointer-events-auto transition-all duration-500`}
+      >
+        <p className={`text-sm font-medium ${theme === 'dark' ? 'text-white/70' : 'text-gray-700'}`}>
+          Made by{' '}
+          <a 
+            href="https://x.com/hoocrypto" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="text-blue-500 font-semibold hover:text-blue-400 transition-colors cursor-pointer"
+          >
+            Juampi
+          </a>
+        </p>
+      </motion.div>
+
       {/* Header - Centered */}
+      <AnimatePresence>
+        {showUI && (
       <header className="fixed top-0 left-0 right-0 z-40 px-6 py-4 pointer-events-none">
         <div className="flex items-center justify-center">
           <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="flex items-center gap-3 glass rounded-xl px-4 py-2 pointer-events-auto"
-          >
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.3 }}
+                className={`flex items-center gap-3 ${
+                  theme === 'light' ? 'bg-white/80 backdrop-blur-md border-gray-200' : 'glass'
+                } rounded-xl px-4 py-2 pointer-events-auto transition-all duration-500`}
+              >
             <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center">
               <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
               </svg>
             </div>
             <div>
-              <h1 className="text-xl font-bold text-white tracking-tight" style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}>Builder Globe</h1>
+              <h1 className={`text-xl font-bold tracking-tight ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`} style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}>Builder Globe</h1>
               <div className="flex items-center gap-1.5">
-                <p className="text-[13px] text-white/60">Powered by</p>
+                <p className={`text-[13px] ${theme === 'dark' ? 'text-white/60' : 'text-gray-600'}`}>Powered by</p>
                 <svg className="h-3.5" viewBox="0 0 384 120" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M349.731 94.5761C346.696 94.5761 344.268 93.6655 342.447 91.8444C340.693 90.0232 339.816 87.595 339.816 84.5598V53.4991H326.056V44.6969H339.816V28.2054H350.237V44.6969H365.11V53.4991H350.237V82.7386C350.237 84.7621 351.181 85.7739 353.07 85.7739H363.491V94.5761H349.731Z" fill="white" fillOpacity="0.5"/>
-                  <path d="M274.196 94.5637V44.6845H284.414V52.1714H286.033C286.978 50.1479 288.664 48.2593 291.092 46.5056C293.52 44.7519 297.129 43.8751 301.918 43.8751C305.695 43.8751 309.034 44.7182 311.934 46.4044C314.902 48.0907 317.229 50.4852 318.915 53.5879C320.601 56.6231 321.444 60.2991 321.444 64.6159V94.5637H311.023V65.4253C311.023 61.1085 309.944 57.9384 307.786 55.9149C305.627 53.8239 302.66 52.7785 298.882 52.7785C294.566 52.7785 291.092 54.1949 288.461 57.0278C285.898 59.8607 284.617 63.9751 284.617 69.3711V94.5637H274.196Z" fill="white" fillOpacity="0.5"/>
-                  <path d="M242.024 95.9845C236.965 95.9845 232.547 94.939 228.77 92.848C224.993 90.6896 222.025 87.6881 219.867 83.8435C217.776 79.9314 216.73 75.4123 216.73 70.2861V69.072C216.73 63.8783 217.776 59.3592 219.867 55.5145C221.958 51.6024 224.858 48.6009 228.568 46.51C232.345 44.3516 236.696 43.2724 241.619 43.2724C246.408 43.2724 250.59 44.3516 254.165 46.51C257.807 48.6009 260.64 51.535 262.664 55.3122C264.687 59.0894 265.699 63.5074 265.699 68.5661V72.5119H227.354C227.489 76.8961 228.939 80.4035 231.704 83.0341C234.537 85.5972 238.045 86.8787 242.226 86.8787C246.138 86.8787 249.073 86.0019 251.029 84.2482C253.052 82.4945 254.603 80.471 255.683 78.1777L264.283 82.6294C263.338 84.518 261.955 86.5078 260.134 88.5987C258.381 90.6896 256.054 92.4433 253.153 93.8598C250.253 95.2762 246.543 95.9845 242.024 95.9845ZM227.455 64.5191H255.076C254.806 60.7419 253.457 57.8078 251.029 55.7169C248.6 53.5585 245.43 52.4793 241.518 52.4793C237.606 52.4793 234.402 53.5585 231.907 55.7169C229.478 57.8078 227.994 60.7419 227.455 64.5191Z" fill="white" fillOpacity="0.5"/>
-                  <path d="M197.32 94.568V23.7456H207.741V94.568H197.32Z" fill="white" fillOpacity="0.5"/>
-                  <path d="M158.454 95.9845C154.879 95.9845 151.675 95.3774 148.842 94.1633C146.077 92.9492 143.851 91.1618 142.165 88.801C140.546 86.4403 139.736 83.5737 139.736 80.2012C139.736 76.7612 140.546 73.9284 142.165 71.7025C143.851 69.4092 146.11 67.6892 148.943 66.5426C151.844 65.396 155.115 64.8226 158.757 64.8226H173.933V61.585C173.933 58.6847 173.057 56.3577 171.303 54.604C169.549 52.8503 166.851 51.9734 163.209 51.9734C159.634 51.9734 156.902 52.8165 155.014 54.5028C153.125 56.189 151.877 58.3812 151.27 61.0792L141.557 57.9427C142.367 55.2447 143.648 52.8166 145.402 50.6582C147.223 48.4323 149.618 46.6449 152.586 45.2959C155.553 43.9469 159.128 43.2724 163.31 43.2724C169.785 43.2724 174.878 44.9249 178.587 48.23C182.297 51.535 184.152 56.2228 184.152 62.2933V82.8317C184.152 84.8552 185.096 85.867 186.985 85.867H191.234V94.568H183.444C181.083 94.568 179.161 93.961 177.677 92.7469C176.193 91.5328 175.451 89.8802 175.451 87.7893V87.4858H173.933C173.394 88.4975 172.584 89.6779 171.505 91.0269C170.426 92.3759 168.841 93.5563 166.75 94.568C164.659 95.5123 161.894 95.9845 158.454 95.9845ZM159.971 87.3846C164.153 87.3846 167.526 86.2042 170.089 83.8435C172.652 81.4153 173.933 78.1102 173.933 73.9283V72.9166H159.364C156.599 72.9166 154.373 73.5237 152.687 74.7377C151 75.8844 150.157 77.6044 150.157 79.8977C150.157 82.191 151.034 84.0121 152.788 85.3611C154.542 86.7101 156.936 87.3846 159.971 87.3846Z" fill="white" fillOpacity="0.5"/>
-                  <path d="M119.498 94.5761C116.463 94.5761 114.034 93.6655 112.213 91.8444C110.46 90.0232 109.583 87.595 109.583 84.5598V53.4991H95.823V44.6969H109.583V28.2054H120.004V44.6969H134.876V53.4991H120.004V82.7386C120.004 84.7621 120.948 85.7739 122.837 85.7739H133.258V94.5761H119.498Z" fill="white" fillOpacity="0.5"/>
-                  <path d="M8.41476 41.7788C10.2415 43.6002 12.6771 44.5109 15.7217 44.5109L46.86 44.5109L43.353 34.4933H18.5633C16.6689 34.4933 15.7217 33.4814 15.7217 31.4577L15.7217 6.81274L5.77613 3.42871L5.77612 34.4933C5.77612 37.5289 6.65567 39.9574 8.41476 41.7788Z" fill="white" fillOpacity="0.5"/>
-                  <path d="M8.41476 91.8629C10.2415 93.6842 12.6771 94.5949 15.7217 94.5949H46.86L43.353 84.5773H18.5633C16.6689 84.5773 15.7217 83.5655 15.7217 81.5417L15.7217 56.8968L5.77613 53.5128L5.77612 84.5773C5.77612 87.613 6.65567 90.0415 8.41476 91.8629Z" fill="white" fillOpacity="0.6"/>
+                  <path d="M349.731 94.5761C346.696 94.5761 344.268 93.6655 342.447 91.8444C340.693 90.0232 339.816 87.595 339.816 84.5598V53.4991H326.056V44.6969H339.816V28.2054H350.237V44.6969H365.11V53.4991H350.237V82.7386C350.237 84.7621 351.181 85.7739 353.07 85.7739H363.491V94.5761H349.731Z" fill={theme === 'dark' ? 'white' : '#1f2937'} fillOpacity={theme === 'dark' ? '0.5' : '0.7'}/>
+                  <path d="M274.196 94.5637V44.6845H284.414V52.1714H286.033C286.978 50.1479 288.664 48.2593 291.092 46.5056C293.52 44.7519 297.129 43.8751 301.918 43.8751C305.695 43.8751 309.034 44.7182 311.934 46.4044C314.902 48.0907 317.229 50.4852 318.915 53.5879C320.601 56.6231 321.444 60.2991 321.444 64.6159V94.5637H311.023V65.4253C311.023 61.1085 309.944 57.9384 307.786 55.9149C305.627 53.8239 302.66 52.7785 298.882 52.7785C294.566 52.7785 291.092 54.1949 288.461 57.0278C285.898 59.8607 284.617 63.9751 284.617 69.3711V94.5637H274.196Z" fill={theme === 'dark' ? 'white' : '#1f2937'} fillOpacity={theme === 'dark' ? '0.5' : '0.7'}/>
+                  <path d="M242.024 95.9845C236.965 95.9845 232.547 94.939 228.77 92.848C224.993 90.6896 222.025 87.6881 219.867 83.8435C217.776 79.9314 216.73 75.4123 216.73 70.2861V69.072C216.73 63.8783 217.776 59.3592 219.867 55.5145C221.958 51.6024 224.858 48.6009 228.568 46.51C232.345 44.3516 236.696 43.2724 241.619 43.2724C246.408 43.2724 250.59 44.3516 254.165 46.51C257.807 48.6009 260.64 51.535 262.664 55.3122C264.687 59.0894 265.699 63.5074 265.699 68.5661V72.5119H227.354C227.489 76.8961 228.939 80.4035 231.704 83.0341C234.537 85.5972 238.045 86.8787 242.226 86.8787C246.138 86.8787 249.073 86.0019 251.029 84.2482C253.052 82.4945 254.603 80.471 255.683 78.1777L264.283 82.6294C263.338 84.518 261.955 86.5078 260.134 88.5987C258.381 90.6896 256.054 92.4433 253.153 93.8598C250.253 95.2762 246.543 95.9845 242.024 95.9845ZM227.455 64.5191H255.076C254.806 60.7419 253.457 57.8078 251.029 55.7169C248.6 53.5585 245.43 52.4793 241.518 52.4793C237.606 52.4793 234.402 53.5585 231.907 55.7169C229.478 57.8078 227.994 60.7419 227.455 64.5191Z" fill={theme === 'dark' ? 'white' : '#1f2937'} fillOpacity={theme === 'dark' ? '0.5' : '0.7'}/>
+                  <path d="M197.32 94.568V23.7456H207.741V94.568H197.32Z" fill={theme === 'dark' ? 'white' : '#1f2937'} fillOpacity={theme === 'dark' ? '0.5' : '0.7'}/>
+                  <path d="M158.454 95.9845C154.879 95.9845 151.675 95.3774 148.842 94.1633C146.077 92.9492 143.851 91.1618 142.165 88.801C140.546 86.4403 139.736 83.5737 139.736 80.2012C139.736 76.7612 140.546 73.9284 142.165 71.7025C143.851 69.4092 146.11 67.6892 148.943 66.5426C151.844 65.396 155.115 64.8226 158.757 64.8226H173.933V61.585C173.933 58.6847 173.057 56.3577 171.303 54.604C169.549 52.8503 166.851 51.9734 163.209 51.9734C159.634 51.9734 156.902 52.8165 155.014 54.5028C153.125 56.189 151.877 58.3812 151.27 61.0792L141.557 57.9427C142.367 55.2447 143.648 52.8166 145.402 50.6582C147.223 48.4323 149.618 46.6449 152.586 45.2959C155.553 43.9469 159.128 43.2724 163.31 43.2724C169.785 43.2724 174.878 44.9249 178.587 48.23C182.297 51.535 184.152 56.2228 184.152 62.2933V82.8317C184.152 84.8552 185.096 85.867 186.985 85.867H191.234V94.568H183.444C181.083 94.568 179.161 93.961 177.677 92.7469C176.193 91.5328 175.451 89.8802 175.451 87.7893V87.4858H173.933C173.394 88.4975 172.584 89.6779 171.505 91.0269C170.426 92.3759 168.841 93.5563 166.75 94.568C164.659 95.5123 161.894 95.9845 158.454 95.9845ZM159.971 87.3846C164.153 87.3846 167.526 86.2042 170.089 83.8435C172.652 81.4153 173.933 78.1102 173.933 73.9283V72.9166H159.364C156.599 72.9166 154.373 73.5237 152.687 74.7377C151 75.8844 150.157 77.6044 150.157 79.8977C150.157 82.191 151.034 84.0121 152.788 85.3611C154.542 86.7101 156.936 87.3846 159.971 87.3846Z" fill={theme === 'dark' ? 'white' : '#1f2937'} fillOpacity={theme === 'dark' ? '0.5' : '0.7'}/>
+                  <path d="M119.498 94.5761C116.463 94.5761 114.034 93.6655 112.213 91.8444C110.46 90.0232 109.583 87.595 109.583 84.5598V53.4991H95.823V44.6969H109.583V28.2054H120.004V44.6969H134.876V53.4991H120.004V82.7386C120.004 84.7621 120.948 85.7739 122.837 85.7739H133.258V94.5761H119.498Z" fill={theme === 'dark' ? 'white' : '#1f2937'} fillOpacity={theme === 'dark' ? '0.5' : '0.7'}/>
+                  <path d="M8.41476 41.7788C10.2415 43.6002 12.6771 44.5109 15.7217 44.5109L46.86 44.5109L43.353 34.4933H18.5633C16.6689 34.4933 15.7217 33.4814 15.7217 31.4577L15.7217 6.81274L5.77613 3.42871L5.77612 34.4933C5.77612 37.5289 6.65567 39.9574 8.41476 41.7788Z" fill={theme === 'dark' ? 'white' : '#1f2937'} fillOpacity={theme === 'dark' ? '0.5' : '0.7'}/>
+                  <path d="M8.41476 91.8629C10.2415 93.6842 12.6771 94.5949 15.7217 94.5949H46.86L43.353 84.5773H18.5633C16.6689 84.5773 15.7217 83.5655 15.7217 81.5417L15.7217 56.8968L5.77613 53.5128L5.77612 84.5773C5.77612 87.613 6.65567 90.0415 8.41476 91.8629Z" fill={theme === 'dark' ? 'white' : '#1f2937'} fillOpacity={theme === 'dark' ? '0.6' : '0.8'}/>
                 </svg>
               </div>
             </div>
+            <div className="w-px h-8 bg-white/10 mx-3" />
+            
+            {/* Theme Toggle */}
+            <div className="flex items-center gap-1 p-1 bg-white/5 rounded-lg">
+              <button
+                onClick={() => setTheme('dark')}
+                className={`p-2 rounded transition-all duration-300 ${
+                  theme === 'dark' ? 'bg-blue-600 text-white' : 'text-white/60 hover:text-white'
+                }`}
+                title="Dark mode"
+              >
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                </svg>
+              </button>
+              <button
+                onClick={() => setTheme('light')}
+                className={`p-2 rounded transition-all duration-300 ${
+                  theme === 'light' ? 'bg-blue-600 text-white' : 'text-white/60 hover:text-white'
+                }`}
+                title="Light mode"
+              >
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+              </button>
+            </div>
+            
             <div className="w-px h-8 bg-white/10 mx-3" />
             
             {/* Ecosystem Filter - Custom Dropdown */}
@@ -319,7 +382,7 @@ export default function Home() {
                     >
                       All Builders
                     </button>
-                    <button
+            <button
                       onClick={() => {
                         setEcosystem('base');
                         setSelectedCountry(null);
@@ -332,7 +395,7 @@ export default function Home() {
                       }`}
                     >
                       Base Ecosystem
-                    </button>
+            </button>
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -340,6 +403,8 @@ export default function Home() {
           </motion.div>
         </div>
       </header>
+        )}
+      </AnimatePresence>
 
       {/* Loading Progress Overlay */}
       <AnimatePresence>
@@ -357,7 +422,7 @@ export default function Home() {
       <div className="min-h-screen flex">
         {/* Left Panel - Country Rankings - Floating Liquid Glass */}
         <AnimatePresence mode="wait">
-          {(showPanel === 'left' || showPanel === 'both') && (
+          {showUI && (showPanel === 'left' || showPanel === 'both') && (
             <motion.aside
               initial={{ opacity: 0, x: -100, scale: 0.95 }}
               animate={{ opacity: 1, x: 0, scale: 1 }}
@@ -368,61 +433,64 @@ export default function Home() {
                 stiffness: 300,
                 mass: 0.8
               }}
-              className="fixed left-6 top-24 bottom-6 w-80 glass rounded-2xl overflow-hidden flex flex-col z-30 shadow-2xl"
+              className={`fixed left-6 top-24 bottom-6 w-80 ${
+                theme === 'light' ? 'bg-white/80 backdrop-blur-md border-gray-200' : 'glass'
+              } rounded-2xl overflow-hidden flex flex-col z-30 shadow-2xl transition-all duration-500`}
             >
               {/* Content wrapper with padding */}
               <div className="flex flex-col h-full p-6 pt-4">
-                {/* Mode toggle */}
+              {/* Mode toggle */}
                 <div className="mb-6 p-1 bg-white/5 rounded-xl flex">
-                  <button
-                    onClick={() => setColorMode('builders')}
+                <button
+                  onClick={() => setColorMode('builders')}
                     className={`flex-1 py-3 px-4 rounded-lg text-sm font-medium transition-all flex items-center justify-center gap-2 whitespace-nowrap ${
-                      colorMode === 'builders'
+                    colorMode === 'builders'
                         ? 'bg-blue-600 text-white'
-                        : 'text-white/60 hover:text-white hover:bg-white/5'
-                    }`}
-                  >
+                        : theme === 'dark' ? 'text-white/60 hover:text-white hover:bg-white/5' : 'text-gray-600 hover:text-gray-900 hover:bg-black/5'
+                  }`}
+                >
                     <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                     </svg>
                     By Builders
-                  </button>
-                  <button
-                    onClick={() => setColorMode('rank')}
+                </button>
+                <button
+                  onClick={() => setColorMode('rank')}
                     className={`flex-1 py-3 px-4 rounded-lg text-sm font-medium transition-all flex items-center justify-center gap-2 whitespace-nowrap ${
-                      colorMode === 'rank'
+                    colorMode === 'rank'
                         ? 'bg-blue-600 text-white'
-                        : 'text-white/60 hover:text-white hover:bg-white/5'
-                    }`}
-                  >
+                        : theme === 'dark' ? 'text-white/60 hover:text-white hover:bg-white/5' : 'text-gray-600 hover:text-gray-900 hover:bg-black/5'
+                  }`}
+                >
                     <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
                     </svg>
                     By Avg Score
-                  </button>
-                </div>
+                </button>
+              </div>
 
-                {/* Country list */}
-                <div className="flex-1 overflow-y-auto space-y-3 pr-2">
-                  {sortedCountries.length === 0 && loadingState.isLoading ? (
-                    // Loading skeleton
-                    Array.from({ length: 8 }).map((_, i) => (
-                      <div key={i} className="h-28 rounded-xl shimmer" />
-                    ))
-                  ) : (
-                    sortedCountries.map((country, index) => (
-                      <CountryCard
-                        key={country.countryCode}
-                        country={country}
-                        rank={index + 1}
-                        maxBuilderCount={displayData?.maxBuilderCount || 1}
-                        maxRankScore={displayData?.maxRankScore || 1}
-                        mode={colorMode}
-                        onClick={() => handleCardClick(country)}
-                        isSelected={selectedCountry?.countryCode === country.countryCode}
-                      />
-                    ))
-                  )}
+              {/* Country list */}
+              <div className="flex-1 overflow-y-auto space-y-3 pr-2">
+                {sortedCountries.length === 0 && loadingState.isLoading ? (
+                  // Loading skeleton
+                  Array.from({ length: 8 }).map((_, i) => (
+                    <div key={i} className="h-28 rounded-xl shimmer" />
+                  ))
+                ) : (
+                  sortedCountries.map((country, index) => (
+                    <CountryCard
+                      key={country.countryCode}
+                      country={country}
+                      rank={index + 1}
+                      maxBuilderCount={displayData?.maxBuilderCount || 1}
+                      maxRankScore={displayData?.maxRankScore || 1}
+                      mode={colorMode}
+                      onClick={() => handleCardClick(country)}
+                      isSelected={selectedCountry?.countryCode === country.countryCode}
+                        theme={theme}
+                    />
+                  ))
+                )}
                 </div>
               </div>
             </motion.aside>
@@ -447,38 +515,45 @@ export default function Home() {
           )}
 
           {/* Legend - Centered at bottom */}
+          <AnimatePresence>
+            {showUI && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5 }}
-            className="absolute bottom-6 left-1/2 -translate-x-1/2 glass rounded-xl px-6 py-3"
+                exit={{ opacity: 0, y: 20 }}
+                transition={{ delay: 0.5, duration: 0.3 }}
+                className={`absolute bottom-6 left-1/2 -translate-x-1/2 ${
+                  theme === 'light' ? 'bg-white/80 backdrop-blur-md border-gray-200' : 'glass'
+                } rounded-xl px-6 py-3 transition-all duration-500`}
           >
             <div className="flex items-center gap-6">
               <div className="flex items-center gap-2">
                 <div className="w-3 h-3 rounded-full bg-blue-500" />
-                <span className="text-xs text-white/70">
+                <span className={`text-xs ${theme === 'dark' ? 'text-white/70' : 'text-gray-700'}`}>
                   {colorMode === 'builders' ? 'More Builders' : 'Higher Avg Score'}
                 </span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-3 h-3 rounded-full bg-white/20" />
-                <span className="text-xs text-white/70">
+                <div className={`w-3 h-3 rounded-full ${theme === 'dark' ? 'bg-white/20' : 'bg-gray-400'}`} />
+                <span className={`text-xs ${theme === 'dark' ? 'text-white/70' : 'text-gray-700'}`}>
                   {colorMode === 'builders' ? 'Fewer Builders' : 'Lower Avg Score'}
                 </span>
               </div>
               <div className="flex items-center gap-2">
-                <svg className="w-4 h-4 text-white/50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg className={`w-4 h-4 ${theme === 'dark' ? 'text-white/50' : 'text-gray-600'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
-                <span className="text-xs text-white/50">Double-click to view builders</span>
+                <span className={`text-xs ${theme === 'dark' ? 'text-white/50' : 'text-gray-600'}`}>Double-click to view builders</span>
               </div>
             </div>
           </motion.div>
+            )}
+          </AnimatePresence>
         </div>
 
         {/* Right Panel - Stats */}
         <AnimatePresence>
-          {(showPanel === 'right' || showPanel === 'both') && displayData && (
+          {showUI && (showPanel === 'right' || showPanel === 'both') && displayData && (
             <motion.aside
               initial={{ opacity: 0, x: 300 }}
               animate={{ opacity: 1, x: 0 }}
@@ -490,6 +565,7 @@ export default function Home() {
                 data={displayData} 
                 selectedCountry={selectedCountry}
                 onViewBuilders={(country) => setModalCountry(country)}
+                theme={theme}
               />
             </motion.aside>
           )}
@@ -501,6 +577,7 @@ export default function Home() {
         country={modalCountry} 
         onClose={() => setModalCountry(null)}
         ecosystem={ecosystem || undefined}
+        theme={theme}
       />
     </main>
   );
