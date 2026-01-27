@@ -25,6 +25,14 @@ interface LoadingState {
   loadedCountries: CountryStats[];
 }
 
+function getCountryFlag(code: string): string {
+  const codePoints = code
+    .toUpperCase()
+    .split('')
+    .map(char => 127397 + char.charCodeAt(0));
+  return String.fromCodePoint(...codePoints);
+}
+
 export default function Home() {
   const [data, setData] = useState<GlobeData | null>(null);
   const [loadingState, setLoadingState] = useState<LoadingState>({
@@ -41,6 +49,7 @@ export default function Home() {
   const [ecosystem, setEcosystem] = useState<string | null>(null); // null = all, 'base' = Base ecosystem
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [showDesktopPanel, setShowDesktopPanel] = useState(true);
 
   useEffect(() => {
     async function fetchDataWithProgress() {
@@ -229,11 +238,19 @@ export default function Home() {
       <div className="fixed inset-0 grid-pattern pointer-events-none" />
       <div className="fixed inset-0 noise-overlay pointer-events-none" />
 
-      {/* Mobile Menu Button - Top Left */}
+      {/* Menu Toggle Button - Top Left */}
       <motion.button
         initial={{ opacity: 0, x: -20 }}
         animate={{ opacity: 1, x: 0 }}
-        onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+        onClick={() => {
+          // On mobile: toggle drawer
+          // On desktop: toggle left panel visibility
+          if (window.innerWidth < 1024) {
+            setIsMobileMenuOpen(!isMobileMenuOpen);
+          } else {
+            setShowDesktopPanel(!showDesktopPanel);
+          }
+        }}
         className="fixed top-4 left-4 z-50 p-2.5 glass rounded-xl hover:bg-blue-600/20 transition-all duration-300 pointer-events-auto group lg:top-6 lg:left-6 lg:p-3"
         title="Toggle menu"
       >
@@ -452,17 +469,20 @@ export default function Home() {
         </AnimatePresence>
 
         {/* Desktop Left Panel - Country Rankings - Floating Liquid Glass */}
-        <motion.aside
-          initial={{ opacity: 0, x: -100, scale: 0.95 }}
-          animate={{ opacity: 1, x: 0, scale: 1 }}
-          transition={{ 
-            type: 'spring', 
-            damping: 30, 
-            stiffness: 300,
-            mass: 0.8
-          }}
-          className="hidden lg:flex fixed left-6 top-24 bottom-6 w-80 glass rounded-2xl overflow-hidden flex-col z-30 shadow-2xl"
-        >
+        <AnimatePresence>
+          {showDesktopPanel && (
+            <motion.aside
+              initial={{ opacity: 0, x: -100, scale: 0.95 }}
+              animate={{ opacity: 1, x: 0, scale: 1 }}
+              exit={{ opacity: 0, x: -100, scale: 0.95 }}
+              transition={{ 
+                type: 'spring', 
+                damping: 30, 
+                stiffness: 300,
+                mass: 0.8
+              }}
+              className="hidden lg:flex fixed left-6 top-24 bottom-6 w-80 glass rounded-2xl overflow-hidden flex-col z-30 shadow-2xl"
+            >
               {/* Content wrapper with padding */}
               <div className="flex flex-col h-full p-6 pt-4">
                 {/* Mode toggle */}
@@ -519,6 +539,8 @@ export default function Home() {
                 </div>
               </div>
             </motion.aside>
+          )}
+        </AnimatePresence>
 
         {/* Globe Container */}
         <div className="flex-1 relative">
@@ -599,17 +621,96 @@ export default function Home() {
             animate={{ y: 0 }}
             exit={{ y: '100%' }}
             transition={{ type: 'spring', damping: 30 }}
-            className="fixed bottom-0 left-0 right-0 z-30 glass border-t border-white/10 rounded-t-2xl max-h-[60vh] overflow-y-auto"
+            className="fixed bottom-0 left-0 right-0 z-30 glass border-t border-white/10 rounded-t-2xl max-h-[70vh] overflow-y-auto"
           >
             <div className="p-4">
-              {/* Drag handle */}
-              <div className="w-12 h-1 bg-white/20 rounded-full mx-auto mb-4" />
+              {/* Header with drag handle and close button */}
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex-1 flex justify-center">
+                  <div className="w-12 h-1 bg-white/20 rounded-full" />
+                </div>
+                <button
+                  onClick={() => setSelectedCountry(null)}
+                  className="p-2 rounded-lg bg-white/5 hover:bg-white/10 transition-colors"
+                  aria-label="Close"
+                >
+                  <svg className="w-5 h-5 text-white/70" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
               
-              <StatsPanel 
-                data={displayData} 
-                selectedCountry={selectedCountry}
-                onViewBuilders={(country) => setModalCountry(country)}
-              />
+              {/* Selected Country Detail - Without Stats Cards */}
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="rounded-lg sm:rounded-xl bg-gradient-to-br from-indigo-500/20 to-cyan-500/20 border border-indigo-400/30 p-4 sm:p-5"
+              >
+                <div className="flex items-center gap-3 mb-4">
+                  <span className="text-4xl">{getCountryFlag(selectedCountry.countryCode)}</span>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-xl font-bold text-white truncate">{selectedCountry.country}</h3>
+                    <p className="text-sm text-white/60">Selected Country</p>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4 mb-4">
+                  <div className="text-center">
+                    <p className="text-2xl font-bold text-cyan-400">{selectedCountry.builderCount.toLocaleString()}</p>
+                    <p className="text-xs text-white/50">Builders</p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-2xl font-bold text-amber-400">{selectedCountry.rankScore.toLocaleString()}</p>
+                    <p className="text-xs text-white/50">Avg Points</p>
+                  </div>
+                </div>
+
+                {/* Top Builders Preview */}
+                {selectedCountry.topBuilders.length > 0 && (
+                  <div className="mb-4">
+                    <p className="text-xs text-white/50 uppercase tracking-wider mb-2">Top Builders</p>
+                    <div className="space-y-2">
+                      {selectedCountry.topBuilders.slice(0, 3).map((builder, i) => (
+                        <div key={i} className="flex items-center gap-3 bg-black/20 rounded-lg p-2">
+                          <div className="w-8 h-8 rounded-full overflow-hidden bg-gradient-to-br from-indigo-500 to-purple-600 flex-shrink-0">
+                            {builder.image_url ? (
+                              <img src={builder.image_url} alt={builder.name} className="w-full h-full object-cover" />
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center text-sm text-white font-bold">
+                                {builder.name.charAt(0).toUpperCase()}
+                              </div>
+                            )}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm text-white font-medium truncate">{builder.name}</p>
+                          </div>
+                          <div className="flex items-center gap-1 text-cyan-400">
+                            <span className="text-xs">⭐</span>
+                            <span className="text-sm font-bold">{builder.score}</span>
+                            <span className="text-xs text-white/40">pts</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* View All Builders Button */}
+                <button
+                  onClick={() => setModalCountry(selectedCountry)}
+                  className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-indigo-500 to-cyan-500 hover:from-indigo-600 hover:to-cyan-600 active:from-indigo-700 active:to-cyan-700 text-white text-base font-semibold transition-all duration-300 flex items-center justify-center gap-2 group touch-manipulation"
+                >
+                  <span>View Top Builders</span>
+                  <svg 
+                    className="w-5 h-5 group-hover:translate-x-1 transition-transform" 
+                    fill="none" 
+                    viewBox="0 0 24 24" 
+                    stroke="currentColor"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                  </svg>
+                </button>
+              </motion.div>
             </div>
           </motion.div>
         )}
