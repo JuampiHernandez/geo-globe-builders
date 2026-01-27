@@ -11,6 +11,7 @@ export async function generateMetadata(): Promise<Metadata> {
       icon: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌍</text></svg>",
     },
     other: {
+      'base:app_id': '6979020e88e3bac59cf3dbf5',
       'fc:miniapp': JSON.stringify({
         version: 'next',
         imageUrl: `${URL}/embed-image.png`,
