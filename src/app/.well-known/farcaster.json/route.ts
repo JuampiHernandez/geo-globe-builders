@@ -1,13 +1,11 @@
 export async function GET() {
-  const URL = process.env.NEXT_PUBLIC_URL as string;
+  const URL = process.env.NEXT_PUBLIC_URL || "https://geo-globe-builders.vercel.app";
   
   const manifest = {
     accountAssociation: {
-      // These will be generated using Base Build's Account association tool
-      // Instructions: https://www.base.dev/preview?tab=account
-      header: "",
-      payload: "",
-      signature: ""
+      header: "eyJmaWQiOjY3MzAsInR5cGUiOiJhdXRoIiwia2V5IjoiMHg5NEZDQzdGYUQ3RjQyM2MwRjQ3Q2VFMjU2RGY5RjU5YzIwMjJFQ2FFIn0",
+      payload: "eyJkb21haW4iOiJnZW8tZ2xvYmUtYnVpbGRlcnMudmVyY2VsLmFwcCJ9",
+      signature: "T+ChxU5+dlPGonP9mbCbzV9F2p3WbNKCBDuOqNn/UtJmENRV3+j/tbxtMtabuCdWa5VVy8B0f/kAZoMcIotE8Bw="
     },
     miniapp: {
       version: "1",
