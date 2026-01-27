@@ -181,3 +181,37 @@ h1, h2, h3, h4, h5, h6 {
   background: rgba(99, 102, 241, 0.5);
   color: white;
 }
+
+/* Mobile-specific styles */
+@media (max-width: 768px) {
+  /* Ensure touch targets are at least 44x44px */
+  button, a {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  /* Prevent horizontal scroll */
+  body {
+    overflow-x: hidden;
+  }
+  
+  /* Adjust scrollbar for mobile */
+  ::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+  }
+}
+
+/* Fluid typography for mobile */
+@media (max-width: 640px) {
+  html {
+    font-size: 14px;
+  }
+}
+
+/* Tablet and up */
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}

@@ -35,18 +35,18 @@ export default function CountryCard({
       transition={{ delay: rank * 0.05 }}
       onClick={onClick}
       className={`
-        relative overflow-hidden rounded-xl p-4 cursor-pointer
-        transition-all duration-300 ease-out
+        relative overflow-hidden rounded-xl p-3 sm:p-4 cursor-pointer
+        transition-all duration-300 ease-out touch-manipulation
         ${isSelected 
           ? 'bg-gradient-to-r from-indigo-500/30 to-cyan-500/30 border-2 border-indigo-400 scale-[1.02]' 
-          : 'bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20'
+          : 'bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 active:bg-white/15'
         }
       `}
     >
       {/* Rank badge */}
       <div className={`
-        absolute -top-1 -left-1 w-8 h-8 flex items-center justify-center
-        rounded-br-xl text-xs font-bold
+        absolute -top-1 -left-1 w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center
+        rounded-br-xl text-[10px] sm:text-xs font-bold
         ${rank <= 3 
           ? 'bg-gradient-to-br from-amber-400 to-orange-500 text-black' 
           : 'bg-white/10 text-white/60'
@@ -55,24 +55,24 @@ export default function CountryCard({
         #{rank}
       </div>
 
-      <div className="ml-6">
+      <div className="ml-5 sm:ml-6">
         {/* Country name and flag */}
-        <div className="flex items-center gap-2 mb-2">
-          <span className="text-2xl">{getCountryFlag(country.countryCode)}</span>
-          <h3 className="text-white font-semibold truncate">{country.country}</h3>
+        <div className="flex items-center gap-1.5 sm:gap-2 mb-2">
+          <span className="text-xl sm:text-2xl">{getCountryFlag(country.countryCode)}</span>
+          <h3 className="text-sm sm:text-base text-white font-semibold truncate">{country.country}</h3>
         </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-2 gap-3 mb-3">
+        <div className="grid grid-cols-2 gap-2 sm:gap-3 mb-2 sm:mb-3">
           <div className="flex flex-col">
-            <span className="text-xs text-white/50 uppercase tracking-wider">Builders</span>
-            <span className={`text-lg font-bold ${mode === 'builders' ? 'text-cyan-400' : 'text-white/80'}`}>
+            <span className="text-[10px] sm:text-xs text-white/50 uppercase tracking-wider">Builders</span>
+            <span className={`text-base sm:text-lg font-bold ${mode === 'builders' ? 'text-cyan-400' : 'text-white/80'}`}>
               {country.builderCount.toLocaleString()}
             </span>
           </div>
           <div className="flex flex-col">
-            <span className="text-xs text-white/50 uppercase tracking-wider">Avg Score</span>
-            <span className={`text-lg font-bold ${mode === 'rank' ? 'text-emerald-400' : 'text-white/80'}`}>
+            <span className="text-[10px] sm:text-xs text-white/50 uppercase tracking-wider">Avg Score</span>
+            <span className={`text-base sm:text-lg font-bold ${mode === 'rank' ? 'text-emerald-400' : 'text-white/80'}`}>
               {country.rankScore}
             </span>
           </div>
@@ -94,11 +94,11 @@ export default function CountryCard({
 
         {/* Top builders preview */}
         {country.topBuilders.length > 0 && (
-          <div className="mt-3 flex -space-x-2">
+          <div className="mt-2 sm:mt-3 flex -space-x-1.5 sm:-space-x-2">
             {country.topBuilders.slice(0, 4).map((builder, i) => (
               <div
                 key={i}
-                className="relative w-7 h-7 rounded-full border-2 border-black/50 overflow-hidden bg-gradient-to-br from-indigo-500 to-purple-600"
+                className="relative w-6 h-6 sm:w-7 sm:h-7 rounded-full border-2 border-black/50 overflow-hidden bg-gradient-to-br from-indigo-500 to-purple-600"
                 title={`${builder.name} - ${builder.score} pts`}
               >
                 {builder.image_url ? (
@@ -108,14 +108,14 @@ export default function CountryCard({
                     className="w-full h-full object-cover"
                   />
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center text-[10px] text-white font-bold">
+                  <div className="w-full h-full flex items-center justify-center text-[9px] sm:text-[10px] text-white font-bold">
                     {builder.name.charAt(0).toUpperCase()}
                   </div>
                 )}
               </div>
             ))}
             {country.topBuilders.length > 4 && (
-              <div className="w-7 h-7 rounded-full border-2 border-black/50 bg-white/10 flex items-center justify-center text-[10px] text-white/70">
+              <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-full border-2 border-black/50 bg-white/10 flex items-center justify-center text-[9px] sm:text-[10px] text-white/70">
                 +{country.topBuilders.length - 4}
               </div>
             )}
