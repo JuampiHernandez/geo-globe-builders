@@ -10,25 +10,25 @@ export async function GET() {
     miniapp: {
       version: "1",
       name: "Builder Globe",
-      homeUrl: URL || "https://your-domain.com",
-      iconUrl: `${URL || "https://your-domain.com"}/icon.png`,
-      splashImageUrl: `${URL || "https://your-domain.com"}/splash.png`,
+      homeUrl: URL,
+      iconUrl: `${URL}/icon.png`,
+      splashImageUrl: `${URL}/splash.png`,
       splashBackgroundColor: "#030712",
-      webhookUrl: `${URL || "https://your-domain.com"}/api/webhook`,
+      webhookUrl: `${URL}/api/webhook`,
       subtitle: "Explore builders worldwide",
       description: "Discover talented builders globally with Talent Protocol. View statistics, rankings, and ecosystem participation on an interactive 3D globe.",
       screenshotUrls: [
-        `${URL || "https://your-domain.com"}/screenshot-1.png`,
-        `${URL || "https://your-domain.com"}/screenshot-2.png`,
-        `${URL || "https://your-domain.com"}/screenshot-3.png`
+        `${URL}/screenshot-1.png`,
+        `${URL}/screenshot-2.png`,
+        `${URL}/screenshot-3.png`
       ],
       primaryCategory: "social",
       tags: ["builders", "talent", "globe", "visualization", "base"],
-      heroImageUrl: `${URL || "https://your-domain.com"}/hero.png`,
+      heroImageUrl: `${URL}/hero.png`,
       tagline: "Discover builders worldwide",
       ogTitle: "Builder Globe",
       ogDescription: "Explore talented builders around the world on an interactive 3D globe",
-      ogImageUrl: `${URL || "https://your-domain.com"}/og-image.png`,
+      ogImageUrl: `${URL}/og-image.png`,
       noindex: false
     }
   };
