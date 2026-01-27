@@ -106,12 +106,12 @@ export default function Globe({
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // Hide hint after 10 seconds
+  // Hide hint after 1 second
   useEffect(() => {
     if (globeReady) {
       const timer = setTimeout(() => {
         setShowHint(false);
-      }, 10000);
+      }, 1000);
       return () => clearTimeout(timer);
     }
   }, [globeReady]);
