@@ -289,15 +289,17 @@ export default function Globe({
       {/* Mobile touch hint - fades out after 10 seconds */}
       <AnimatePresence>
         {globeReady && showHint && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 20 }}
-            transition={{ duration: 0.3 }}
-            className="lg:hidden absolute bottom-20 left-1/2 -translate-x-1/2 px-3 py-1.5 bg-black/40 backdrop-blur-md rounded-full border border-white/10"
-          >
-            <span className="text-white/70 text-xs">🔄 Drag to rotate • Tap to select</span>
-          </motion.div>
+          <div className="lg:hidden absolute bottom-16 left-1/2 -translate-x-1/2 z-50">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              transition={{ duration: 0.3 }}
+              className="px-4 py-2 bg-black/60 backdrop-blur-md rounded-full border border-white/20"
+            >
+              <span className="text-white/90 text-sm whitespace-nowrap">🔄 Drag to rotate • Tap to select</span>
+            </motion.div>
+          </div>
         )}
       </AnimatePresence>
       

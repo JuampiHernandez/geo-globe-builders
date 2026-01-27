@@ -538,12 +538,13 @@ export default function Home() {
           )}
 
           {/* Legend - Centered at bottom - Single line on mobile */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5 }}
-            className="absolute bottom-3 sm:bottom-6 left-1/2 -translate-x-1/2 glass rounded-lg sm:rounded-xl px-3 sm:px-6 py-2 sm:py-3"
-          >
+          <div className="absolute bottom-3 sm:bottom-6 left-1/2 -translate-x-1/2 z-40">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5 }}
+              className="glass rounded-lg sm:rounded-xl px-3 sm:px-6 py-2 sm:py-3"
+            >
             <div className="flex items-center gap-3 sm:gap-6 whitespace-nowrap">
               <div className="flex items-center gap-1.5 sm:gap-2">
                 <div className="w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-blue-500 flex-shrink-0" />
@@ -564,14 +565,15 @@ export default function Home() {
                 <span className="text-xs text-white/50">Double-click to view builders</span>
               </div>
             </div>
-          </motion.div>
+            </motion.div>
+          </div>
 
           {/* Powered by Talent - Top Right */}
           <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
-            className="absolute top-3 sm:top-6 right-2 sm:right-6 flex flex-col items-center gap-1 pointer-events-auto"
+            className="absolute top-3 sm:top-6 right-2 sm:right-6 flex flex-col items-center gap-1 pointer-events-auto z-50"
           >
             <p className="text-[10px] sm:text-xs text-white/70 whitespace-nowrap">Powered by</p>
             <a href="https://talent.app" target="_blank" rel="noopener noreferrer">
