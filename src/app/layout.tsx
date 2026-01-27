@@ -1,13 +1,33 @@
 import type { Metadata } from "next";
 import "./globals.css";
 
-export const metadata: Metadata = {
-  title: "Builder Globe | Talent Protocol",
-  description: "Explore builders around the world with Talent Protocol",
-  icons: {
-    icon: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌍</text></svg>",
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const URL = process.env.NEXT_PUBLIC_URL || "https://your-domain.com";
+  
+  return {
+    title: "Builder Globe | Talent Protocol",
+    description: "Explore builders around the world with Talent Protocol",
+    icons: {
+      icon: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌍</text></svg>",
+    },
+    other: {
+      'fc:miniapp': JSON.stringify({
+        version: 'next',
+        imageUrl: `${URL}/embed-image.png`,
+        button: {
+          title: 'Explore Builder Globe',
+          action: {
+            type: 'launch_miniapp',
+            name: 'Builder Globe',
+            url: URL,
+            splashImageUrl: `${URL}/splash.png`,
+            splashBackgroundColor: '#030712',
+          },
+        },
+      }),
+    },
+  };
+}
 
 export default function RootLayout({
   children,
