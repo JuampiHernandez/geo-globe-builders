@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, useCallback, useMemo } from 'react';
 import dynamic from 'next/dynamic';
+import { motion, AnimatePresence } from 'framer-motion';
 import { CountryStats, COUNTRY_COORDINATES } from '@/types';
 
 const GlobeGL = dynamic(() => import('react-globe.gl').then(mod => mod.default), { 
@@ -29,6 +30,8 @@ export default function Globe({
   const [globeReady, setGlobeReady] = useState(false);
   const [hoveredCountry, setHoveredCountry] = useState<string | null>(null);
   const lastClickRef = useRef<{ time: number; country: string | null }>({ time: 0, country: null });
+  const [dimensions, setDimensions] = useState({ width: 800, height: 600 });
+  const [showHint, setShowHint] = useState(true);
 
   // Memoize points data to prevent unnecessary recalculations
   const pointsData = useMemo(() => {
@@ -89,12 +92,70 @@ export default function Globe({
     }).filter((ring): ring is NonNullable<typeof ring> => ring !== null);
   }, [countries]);
 
+  // Handle window resize
+  useEffect(() => {
+    const handleResize = () => {
+      setDimensions({
+        width: window.innerWidth,
+        height: window.innerHeight
+      });
+    };
+    
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  // Hide hint after 10 seconds
+  useEffect(() => {
+    if (globeReady) {
+      const timer = setTimeout(() => {
+        setShowHint(false);
+      }, 10000);
+      return () => clearTimeout(timer);
+    }
+  }, [globeReady]);
+
   useEffect(() => {
     if (globeEl.current && globeReady) {
       try {
-        globeEl.current.controls().autoRotate = true;
-        globeEl.current.controls().autoRotateSpeed = 0.5;
-        globeEl.current.pointOfView({ lat: 20, lng: 0, altitude: 2.5 });
+        const controls = globeEl.current.controls();
+        const isMobile = window.innerWidth < 1024;
+        
+        if (isMobile) {
+          // Mobile: Fixed position, rotation only - MUCH smaller globe
+          controls.autoRotate = false;
+          controls.enableZoom = false;
+          controls.enablePan = false;
+          controls.enableRotate = true;
+          controls.rotateSpeed = 0.8;
+          
+          // Much higher altitude = much smaller globe that fits on screen
+          globeEl.current.pointOfView({ 
+            lat: 20, 
+            lng: 0, 
+            altitude: 4.5 
+          }, 0);
+          
+          // Lock the distance completely - no zoom
+          controls.minDistance = 450;
+          controls.maxDistance = 450;
+          controls.minPolarAngle = 0;
+          controls.maxPolarAngle = Math.PI;
+        } else {
+          // Desktop: Full controls with auto-rotation
+          controls.autoRotate = true;
+          controls.autoRotateSpeed = 0.5;
+          controls.enableZoom = true;
+          controls.enablePan = true;
+          controls.enableRotate = true;
+          
+          globeEl.current.pointOfView({ 
+            lat: 20, 
+            lng: 0, 
+            altitude: 2.5 
+          });
+        }
       } catch (e) {
         console.warn('Globe controls not ready yet:', e);
       }
@@ -112,10 +173,10 @@ export default function Globe({
       const now = Date.now();
       const lastClick = lastClickRef.current;
       
-      // Check for double-click (within 400ms on same country)
+      // Check for double-click/double-tap (within 500ms on same country for better mobile UX)
       if (
         lastClick.country === p.country.countryCode && 
-        now - lastClick.time < 400 &&
+        now - lastClick.time < 500 &&
         onCountryDoubleClick
       ) {
         onCountryDoubleClick(p.country);
@@ -149,17 +210,21 @@ export default function Globe({
   }, []);
 
   return (
-    <div className="relative w-full h-full">
+    <div className="relative w-full h-full" style={{ touchAction: 'none' }}>
       {/* Glow effect behind globe */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-        <div className="w-[600px] h-[600px] rounded-full bg-gradient-radial from-indigo-500/20 via-cyan-500/10 to-transparent blur-3xl" />
+        <div className="w-[200px] h-[200px] sm:w-[300px] sm:h-[300px] lg:w-[600px] lg:h-[600px] rounded-full bg-gradient-radial from-indigo-500/20 via-cyan-500/10 to-transparent blur-3xl" />
       </div>
       
-      <GlobeGL
-        ref={globeEl as any}
-        globeImageUrl="https://unpkg.com/three-globe/example/img/earth-night.jpg"
-        bumpImageUrl="https://unpkg.com/three-globe/example/img/earth-topology.png"
-        backgroundImageUrl="https://unpkg.com/three-globe/example/img/night-sky.png"
+      <div className="w-full h-full lg:w-full lg:h-full">
+        <GlobeGL
+          ref={globeEl as any}
+          globeImageUrl="https://unpkg.com/three-globe/example/img/earth-night.jpg"
+          bumpImageUrl="https://unpkg.com/three-globe/example/img/earth-topology.png"
+          backgroundImageUrl="https://unpkg.com/three-globe/example/img/night-sky.png"
+          
+          width={dimensions.width}
+          height={dimensions.height}
         
         // Points (countries with builders)
         pointsData={pointsData}
@@ -211,21 +276,39 @@ export default function Globe({
         // Settings
         animateIn={true}
         onGlobeReady={handleGlobeReady}
-      />
+        />
+      </div>
 
-      {/* Hover indicator */}
+      {/* Hover indicator - Hidden on mobile for better UX */}
       {hoveredCountry && (
-        <div className="absolute top-4 left-1/2 -translate-x-1/2 px-4 py-2 bg-black/60 backdrop-blur-md rounded-full border border-indigo-500/30">
+        <div className="hidden sm:block absolute top-4 left-1/2 -translate-x-1/2 px-4 py-2 bg-black/60 backdrop-blur-md rounded-full border border-indigo-500/30">
           <span className="text-white font-medium">{hoveredCountry}</span>
         </div>
       )}
+      
+      {/* Mobile touch hint - fades out after 10 seconds */}
+      <AnimatePresence>
+        {globeReady && showHint && (
+          <div className="lg:hidden absolute bottom-16 left-1/2 -translate-x-1/2 z-50">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              transition={{ duration: 0.3 }}
+              className="px-4 py-2 bg-black/60 backdrop-blur-md rounded-full border border-white/20"
+            >
+              <span className="text-white/90 text-sm whitespace-nowrap">🔄 Drag to rotate • Tap to select</span>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
       
       {/* Loading overlay while globe initializes */}
       {!globeReady && (
         <div className="absolute inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm">
           <div className="flex items-center gap-3">
-            <div className="w-5 h-5 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" />
-            <span className="text-white/70">Initializing globe...</span>
+            <div className="w-4 h-4 sm:w-5 sm:h-5 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" />
+            <span className="text-sm sm:text-base text-white/70">Initializing globe...</span>
           </div>
         </div>
       )}
