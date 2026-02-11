@@ -39,6 +39,7 @@ export default function RootLayout({
     <html lang="en">
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes" />
+        <meta name="talentapp:project_verification" content="748b91c53e5746ecefd40c5312089ceac2e01d2c2e8c992e4de949e1a318bc17127b851bc5fb766b0e2e689e8934cecbbc026cb0cd6ef55bb3fd639b111eb9a0" />
       </head>
       <body className="antialiased">
         {children}
