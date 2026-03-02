@@ -8,7 +8,17 @@ export async function generateMetadata(): Promise<Metadata> {
   title: "Builder Globe | Talent Protocol",
   description: "Explore builders around the world with Talent Protocol",
   icons: {
-    icon: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌍</text></svg>",
+    icon: [
+      { url: "/favicon.ico", sizes: "32x32" },
+      { url: "/icon.png", sizes: "512x512", type: "image/png" },
+    ],
+    apple: "/icon.png",
+  },
+  openGraph: {
+    title: "Builder Globe | Talent Protocol",
+    description: "Explore builders around the world with Talent Protocol",
+    images: [`${URL}/og-image.png`],
+    type: "website",
   },
     other: {
       'base:app_id': '6979020e88e3bac59cf3dbf5',
